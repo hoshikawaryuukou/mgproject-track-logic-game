@@ -1,21 +1,31 @@
 <script setup lang="ts">
 import { useGameStore } from '../stores/useGameStore'
-import GameBoard from './GameBoard.vue'
+import GameBoard from '@/components/GameBoard.vue'
 
 const gameStore = useGameStore()
 </script>
 
 <template>
-  <div class="container">
-    <button @click="gameStore.initializeGame">Restart</button>
-    <div class="spacer"></div>
-    <div>Current Player: <span class="currentPlayer" :class="gameStore.player"></span></div>
-    <div class="spacer"></div>
-    <GameBoard />
+  <div class="game">
+    <div class="container">
+      <button @click="gameStore.initializeGame">Restart</button>
+      <div class="spacer"></div>
+      <div>Current Player: <span class="currentPlayer" :class="gameStore.player"></span></div>
+      <div class="spacer"></div>
+      <GameBoard />
+    </div>
   </div>
 </template>
 
-<style scoped>
+<style>
+@media (min-width: 1024px) {
+  .game {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+}
+
 .container {
   display: flex;
   flex-direction: column;

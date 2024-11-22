@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, defineProps, defineEmits } from 'vue'
+
+// 定義 props 和 emits
+const props = defineProps<{
+  initialStonePositions: number[]
+}>()
+
+const emits = defineEmits<{
+  (e: 'cellClicked', position: number): void
+}>()
 
 const gridSize: number = 4
 const totalCells: number = 16
 const cellSize: number = 80
-const counterClockwiseMap: number[] = [4, 0, 1, 2, 8, 9, 5, 3, 12, 10, 6, 7, 13, 14, 15, 11] // 逆時針移動表
-const clockwiseMap: number[] = [1, 2, 3, 7, 0, 6, 10, 11, 4, 5, 9, 15, 8, 12, 13, 14] // 順時針移動表
-const stonePositions = ref<number[]>([])
+const counterClockwiseMap: number[] = [4, 0, 1, 2, 8, 9, 5, 3, 12, 10, 6, 7, 13, 14, 15, 11]
+const clockwiseMap: number[] = [1, 2, 3, 7, 0, 6, 10, 11, 4, 5, 9, 15, 8, 12, 13, 14]
+const stonePositions = ref<number[]>(props.initialStonePositions || [])
 const stoneTypes = ['⚫', '⚪']
 const stoneTypeIndex = ref<number>(0)
 
@@ -37,48 +46,46 @@ const addStone = (position: number): void => {
   }
 }
 
-onMounted(() => {
-  resetStones()
-})
+defineExpose({ moveStones, resetStones })
 </script>
 
 <template>
-  <div class="container">
-    <div class="grid">
+  <div class="board-container">
+    <div class="board-grid">
       <!-- 渲染格線 -->
       <div
         v-for="index in totalCells"
         :key="'cell-' + index"
-        class="cell"
-        @click="addStone(index - 1)"
+        class="board-cell"
+        @click="
+          () => {
+            addStone(index - 1)
+            emits('cellClicked', index - 1)
+          }
+        "
       ></div>
 
       <!-- 渲染石頭 -->
       <div
         v-for="(pos, index) in stonePositions"
         :key="'stone-' + index"
-        class="character stone"
+        class="board-stone"
         :style="getStyle(pos)"
         @click.stop
       >
         {{ stoneTypes[index % stoneTypes.length] }}
       </div>
     </div>
-    <div class="buttons">
-      <button @click="moveStones('clockwise')" class="move-button">順時針移動</button>
-      <button @click="moveStones('counterClockwise')" class="move-button">逆時針移動</button>
-      <button @click="resetStones" class="reset-button">重置</button>
-    </div>
   </div>
 </template>
 
 <style scoped>
-.container {
+.board-container {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.grid {
+.board-grid {
   position: relative;
   width: 320px; /* gridSize * cellSize */
   height: 320px;
@@ -90,10 +97,10 @@ onMounted(() => {
   background-color: #f8f8f8;
   margin-bottom: 20px; /* 增加底部空間 */
 }
-.cell {
+.board-cell {
   border: 1px solid #ddd;
 }
-.character {
+.board-stone {
   pointer-events: none; /* 使石頭不會阻止點擊事件 */
   position: absolute;
   width: 80px;
@@ -103,21 +110,5 @@ onMounted(() => {
   align-items: center;
   font-size: 36px; /* Emoji 的大小 */
   transition: transform 0.5s ease; /* 平滑移動動畫 */
-}
-.buttons {
-  display: flex;
-  gap: 10px;
-}
-.move-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
-.reset-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #f44336; /* 重置按鈕的背景色 */
-  color: white; /* 重置按鈕的文字顏色 */
 }
 </style>
