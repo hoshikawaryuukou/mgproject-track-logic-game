@@ -18,6 +18,14 @@
 
 ---
 
+## Domain Model
+
+棋盤: 一維陣列
+
+
+
+
+
 ## Presentation
 
 遊戲的三個狀態：

@@ -1,71 +1,49 @@
-import { BoardTransformer } from './board-transformer'
-import { Player } from './player'
-import { WinChecker } from './win-checker'
-import { Board } from './board'
+import { Board, Direction } from './board'
+import { Player, type Winner } from './types'
 
 export class Game {
-  private boardSize: number = 4
-  private boardTransformer: BoardTransformer
-  private winChecker: WinChecker
-  private player: Player
   private board: Board
-  private boardPlaced: (Player | null)[][]
-  private boardMoved: (Player | null)[][]
-  private winner: Player | 'Draw' | null = null
+  private currentPlayer: Player
+  private winner: Winner
 
-  constructor(initialPlayer: Player) {
-    this.boardTransformer = new BoardTransformer(this.boardSize)
-    this.winChecker = new WinChecker(this.boardSize)
-    this.player = initialPlayer
-    this.board = new Board(this.boardSize)
-    this.boardPlaced = this.board.getBoard()
-    this.boardMoved = this.board.getBoard()
+  constructor() {
+    this.board = new Board()
+    this.currentPlayer = Player.Black
     this.winner = null
   }
 
-  getPlayer(): Player {
-    return this.player
-  }
-
-  getBoardPlaced(): ReadonlyArray<ReadonlyArray<Player | null>> {
-    return this.boardPlaced
-  }
-
-  getBoardMoved(): ReadonlyArray<ReadonlyArray<Player | null>> {
-    return this.boardMoved
-  }
-
-  getWinner(): Player | 'Draw' | null {
-    return this.winner
-  }
-
-  placeStone(rowIndex: number, cellIndex: number) {
+  placeStone(index: number) {
     if (this.winner !== null) {
       return
     }
 
-    if (!this.board.isCellEmpty(rowIndex, cellIndex)) {
+    if (!this.board.isEmpty(index)) {
       return
     }
 
-    this.board.setCell(rowIndex, cellIndex, this.player)
-    this.boardPlaced = this.board.getBoard()
+    this.board.placeStone(index, this.currentPlayer)
+    this.board.moveStones(Direction.Clockwise)
 
-    this.boardTransformer.moveCounterClockwise(this.board)
-    this.boardMoved = this.board.getBoard()
-
-    const blackWins = this.winChecker.checkWin(this.board, Player.Black)
-    const whiteWins = this.winChecker.checkWin(this.board, Player.White)
-    if (blackWins && whiteWins) {
+    const isblackWin = this.board.checkWin(Player.Black)
+    const isWhiteWin = this.board.checkWin(Player.White)
+    if (isblackWin && isWhiteWin) {
       this.winner = 'Draw'
-    } else if (blackWins) {
+    } else if (isblackWin) {
       this.winner = Player.Black
-    } else if (whiteWins) {
+    } else if (isWhiteWin) {
       this.winner = Player.White
     } else if (this.board.isFull()) {
       this.winner = 'Draw'
     } else {
-      this.player = this.player === Player.Black ? Player.White : Player.Black
+      this.currentPlayer = this.currentPlayer === Player.Black ? Player.White : Player.Black
+    }
+  }
+
+  getState() {
+    return {
+      stones: this.board.getStones(),
+      currentPlayer: this.currentPlayer,
+      winner: this.winner,
     }
   }
 }

@@ -1,56 +1,58 @@
 <script setup lang="ts">
 import { useGameStore } from '../stores/useGameStore'
-import GameBoard from '@/components/GameBoard.vue'
+import Board from '@/components/Board.vue'
+import { ref, onMounted } from 'vue'
 
 const gameStore = useGameStore()
+const boardRef = ref()
+const initialStonePositions = ref<number[]>([])
+
+const resetStones = (): void => {
+  boardRef.value?.resetStones()
+}
+
+const handleCellClicked = (position: number): void => {
+  gameStore.placeStone(position)
+  boardRef.value = gameStore.stones
+}
+
+onMounted(() => {
+  resetStones()
+})
 </script>
 
 <template>
-  <div class="game">
-    <div class="container">
-      <button @click="gameStore.initializeGame">Restart</button>
-      <div class="spacer"></div>
-      <div>Current Player: <span class="currentPlayer" :class="gameStore.player"></span></div>
-      <div class="spacer"></div>
-      <GameBoard />
-    </div>
+  <div class="about">
+    <Board
+      ref="boardRef"
+      :initialStonePositions="initialStonePositions"
+      @cellClicked="handleCellClicked"
+    />
   </div>
 </template>
 
 <style>
-@media (min-width: 1024px) {
-  .game {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
-
-.container {
+.about {
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
-
-.spacer {
-  height: 20px; /* Adjust the height as needed */
+.buttons {
+  display: flex;
+  gap: 10px;
 }
-
-.currentPlayer {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  vertical-align: middle;
+.move-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
 }
-
-.currentPlayer.black {
-  background-color: black;
-  border: 1px solid white;
-}
-
-.currentPlayer.white {
-  background-color: white;
-  border: 1px solid black;
+.reset-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #f44336;
+  color: white;
 }
 </style>

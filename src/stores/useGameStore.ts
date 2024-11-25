@@ -1,27 +1,30 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { Game } from '../models/game'
-import { Player } from '../models/player'
+import type { Cell, Player, Winner } from '@/models/types'
 
 export const useGameStore = defineStore('game', () => {
-  const game = ref(new Game(Player.Black))
-  const player = computed(() => game.value.getPlayer())
-  const boardPlaced = computed(() => game.value.getBoardPlaced())
-  const boardMoved = computed(() => game.value.getBoardMoved())
-  const winner = computed(() => game.value.getWinner())
+  const game = ref<Game>(new Game())
+  const stones = ref<Cell[]>([])
+  const currentPlayer = ref<Player>()
+  const winner = ref<Winner>()
 
   const initializeGame = () => {
-    game.value = new Game(Math.random() < 0.5 ? Player.Black : Player.White)
+    game.value = new Game()
   }
 
-  const placeStone = (rowIndex: number, cellIndex: number) => {
-    game.value.placeStone(rowIndex, cellIndex)
+  const placeStone = (index: number) => {
+    game.value.placeStone(index)
+    const state = game.value.getState()
+
+    stones.value = state.stones
+    currentPlayer.value = state.currentPlayer
+    winner.value = state.winner
   }
 
   return {
-    player,
-    boardPlaced,
-    boardMoved,
+    currentPlayer,
+    stones,
     winner,
     initializeGame,
     placeStone,

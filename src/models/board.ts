@@ -1,35 +1,64 @@
-import { Player } from './player'
+import type { Cell, Player, WinLine } from './types'
+
+export enum Direction {
+  Clockwise = 'Clockwise',
+  CounterClockwise = 'CounterClockwise',
+}
 
 export class Board {
-  private cells: (Player | null)[][]
-  private boardSize: number
+  private counterClockwiseMap: number[] = [4, 0, 1, 2, 8, 9, 5, 3, 12, 10, 6, 7, 13, 14, 15, 11]
+  private clockwiseMap: number[] = [1, 2, 3, 7, 0, 6, 10, 11, 4, 5, 9, 15, 8, 12, 13, 14]
+  private winLines: WinLine[] = [
+    [0, 1, 2, 3],
+    [4, 5, 6, 7],
+    [8, 9, 10, 11],
+    [12, 13, 14, 15],
+    [0, 4, 8, 12],
+    [1, 5, 9, 13],
+    [2, 6, 10, 14],
+    [3, 7, 11, 15],
+    [0, 5, 10, 15],
+    [3, 6, 9, 12],
+  ]
+  private stones: Cell[]
 
-  constructor(boardSize: number) {
-    this.boardSize = boardSize
-    this.cells = Array.from({ length: this.boardSize }, () => Array(this.boardSize).fill(null))
+  constructor() {
+    this.stones = Array(16).fill(null)
   }
 
-  setBoard(newBoard: (Player | null)[][]): void {
-    this.cells = newBoard.map((row) => [...row])
+  placeStone(index: number, player: Player) {
+    this.stones[index] = player
   }
 
-  getBoard(): (Player | null)[][] {
-    return this.cells.map((row) => [...row])
+  moveStones(direction: Direction) {
+    const moveMap = direction === Direction.Clockwise ? this.clockwiseMap : this.counterClockwiseMap
+
+    const newBoard: Cell[] = []
+    for (let i = 0; i < this.stones.length; i++) {
+      newBoard[i] = this.stones[moveMap[i]]
+    }
+
+    this.stones = newBoard
   }
 
-  getCell(rowIndex: number, cellIndex: number): Player | null {
-    return this.cells[rowIndex][cellIndex]
+  checkWin(player: Player): boolean {
+    for (const line of this.winLines) {
+      if (line.every((cellIndex) => this.stones[cellIndex] === player)) {
+        return true
+      }
+    }
+    return false
   }
 
-  setCell(rowIndex: number, cellIndex: number, player: Player | null): void {
-    this.cells[rowIndex][cellIndex] = player
-  }
-
-  isCellEmpty(rowIndex: number, cellIndex: number): boolean {
-    return this.cells[rowIndex][cellIndex] === null
+  isEmpty(index: number): boolean {
+    return this.stones[index] === null
   }
 
   isFull(): boolean {
-    return this.cells.flat().every((cell) => cell !== null)
+    return this.stones.every((stone) => stone !== null)
+  }
+
+  getStones(): Cell[] {
+    return [...this.stones]
   }
 }

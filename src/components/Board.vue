@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from 'vue'
+import { ref, defineEmits } from 'vue'
 
-// 定義 props 和 emits
 const props = defineProps<{
   initialStonePositions: number[]
 }>()

@@ -58,7 +58,7 @@ onMounted(() => {
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  background-color: #f44336; /* 重置按鈕的背景色 */
-  color: white; /* 重置按鈕的文字顏色 */
+  background-color: #f44336;
+  color: white;
 }
 </style>
