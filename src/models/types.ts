@@ -3,9 +3,9 @@ export enum Player {
   White = 'O',
 }
 
-export type WinLine = number[]
-
 export type Winner = Player | 'Draw' | null
+
+export type WinLine = number[]
 
 export type Cell = Player | null
 

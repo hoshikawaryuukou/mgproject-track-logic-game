@@ -6,9 +6,12 @@ export enum Direction {
 }
 
 export class Board {
-  private counterClockwiseMap: number[] = [4, 0, 1, 2, 8, 9, 5, 3, 12, 10, 6, 7, 13, 14, 15, 11]
-  private clockwiseMap: number[] = [1, 2, 3, 7, 0, 6, 10, 11, 4, 5, 9, 15, 8, 12, 13, 14]
-  private winLines: WinLine[] = [
+  private readonly boardSize = 16
+  private readonly clockwiseMap: number[] = [1, 2, 3, 7, 0, 6, 10, 11, 4, 5, 9, 15, 8, 12, 13, 14]
+  private readonly counterClockwiseMap: number[] = [
+    4, 0, 1, 2, 8, 9, 5, 3, 12, 10, 6, 7, 13, 14, 15, 11,
+  ]
+  private readonly winLines: WinLine[] = [
     [0, 1, 2, 3],
     [4, 5, 6, 7],
     [8, 9, 10, 11],
@@ -20,13 +23,17 @@ export class Board {
     [0, 5, 10, 15],
     [3, 6, 9, 12],
   ]
-  private stones: Cell[]
-
-  constructor() {
-    this.stones = Array(16).fill(null)
-  }
+  private stones: Cell[] = Array(this.boardSize).fill(null)
 
   placeStone(index: number, player: Player) {
+    if (this.stones[index] !== null) {
+      throw new Error('Cell is already occupied')
+    }
+
+    if (index < 0 || index >= this.stones.length) {
+      throw new Error('Invalid cell index')
+    }
+
     this.stones[index] = player
   }
 
