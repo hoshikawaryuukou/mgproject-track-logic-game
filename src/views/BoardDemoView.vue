@@ -3,7 +3,6 @@ import Board from '@/components/Board.vue'
 import { ref, onMounted } from 'vue'
 
 const boardRef = ref()
-const initialStonePositions = ref<number[]>([])
 
 const moveStones = (direction: 'clockwise' | 'counterClockwise'): void => {
   boardRef.value?.moveStones(direction)
@@ -14,7 +13,12 @@ const resetStones = (): void => {
 }
 
 const handleCellClicked = (position: number): void => {
-  console.log('點擊的座標:', position)
+  if (boardRef.value?.isCellEmpty(position) === false) {
+    console.log('該位置已被佔用，請選擇其他位置。')
+    return
+  }
+
+  boardRef.value?.addStone(position)
 }
 
 onMounted(() => {
@@ -24,11 +28,7 @@ onMounted(() => {
 
 <template>
   <div class="about">
-    <Board
-      ref="boardRef"
-      :initialStonePositions="initialStonePositions"
-      @cellClicked="handleCellClicked"
-    />
+    <Board ref="boardRef" @cellClicked="handleCellClicked" />
     <div class="buttons">
       <button @click="moveStones('clockwise')" class="move-button">順時針移動</button>
       <button @click="moveStones('counterClockwise')" class="move-button">逆時針移動</button>

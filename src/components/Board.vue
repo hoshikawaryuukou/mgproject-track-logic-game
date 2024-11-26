@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue'
-
-const props = defineProps<{
-  initialStonePositions: number[]
-}>()
+import { ref } from 'vue'
 
 const emits = defineEmits<{
   (e: 'cellClicked', position: number): void
@@ -14,9 +10,8 @@ const totalCells: number = 16
 const cellSize: number = 80
 const counterClockwiseMap: number[] = [4, 0, 1, 2, 8, 9, 5, 3, 12, 10, 6, 7, 13, 14, 15, 11]
 const clockwiseMap: number[] = [1, 2, 3, 7, 0, 6, 10, 11, 4, 5, 9, 15, 8, 12, 13, 14]
-const stonePositions = ref<number[]>(props.initialStonePositions || [])
+const stonePositions = ref<number[]>([])
 const stoneTypes = ['⚫', '⚪']
-const stoneTypeIndex = ref<number>(0)
 
 const getStyle = (position: number): { transform: string } => {
   const x = (position % gridSize) * cellSize
@@ -26,26 +21,24 @@ const getStyle = (position: number): { transform: string } => {
   }
 }
 
+const isCellEmpty = (position: number): boolean => !stonePositions.value.includes(position)
+
+const addStone = (position: number): void => {
+  if (stonePositions.value.length < totalCells) {
+    stonePositions.value.push(position)
+  }
+}
+
 const moveStones = (direction: 'clockwise' | 'counterClockwise'): void => {
   const moveMap = direction === 'clockwise' ? clockwiseMap : counterClockwiseMap
   stonePositions.value = stonePositions.value.map((pos) => moveMap[pos])
 }
 
 const resetStones = (): void => {
-  const positions = new Set<number>()
-  stonePositions.value = Array.from(positions)
+  stonePositions.value = Array.from(new Set<number>())
 }
 
-const addStone = (position: number): void => {
-  if (!stonePositions.value.includes(position) && stonePositions.value.length < totalCells) {
-    stonePositions.value.push(position)
-    stoneTypeIndex.value = (stoneTypeIndex.value + 1) % stoneTypes.length
-  } else {
-    alert('該位置已被佔用，請選擇其他位置。')
-  }
-}
-
-defineExpose({ moveStones, resetStones })
+defineExpose({ isCellEmpty, addStone, moveStones, resetStones })
 </script>
 
 <template>
@@ -53,15 +46,10 @@ defineExpose({ moveStones, resetStones })
     <div class="board-grid">
       <!-- 渲染格線 -->
       <div
-        v-for="index in totalCells"
+        v-for="(_pos, index) in totalCells"
         :key="'cell-' + index"
         class="board-cell"
-        @click="
-          () => {
-            addStone(index - 1)
-            emits('cellClicked', index - 1)
-          }
-        "
+        @click="() => emits('cellClicked', index)"
       ></div>
 
       <!-- 渲染石頭 -->
@@ -86,28 +74,28 @@ defineExpose({ moveStones, resetStones })
 }
 .board-grid {
   position: relative;
-  width: 320px; /* gridSize * cellSize */
+  width: 320px;
   height: 320px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4x4 格線 */
+  grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(4, 1fr);
-  gap: 0; /* 移除單元格間距 */
+  gap: 0;
   border: 2px solid #000;
   background-color: #f8f8f8;
-  margin-bottom: 20px; /* 增加底部空間 */
+  margin-bottom: 20px;
 }
 .board-cell {
   border: 1px solid #ddd;
 }
 .board-stone {
-  pointer-events: none; /* 使石頭不會阻止點擊事件 */
+  pointer-events: none;
   position: absolute;
   width: 80px;
   height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 36px; /* Emoji 的大小 */
-  transition: transform 0.5s ease; /* 平滑移動動畫 */
+  font-size: 36px;
+  transition: transform 0.5s ease;
 }
 </style>

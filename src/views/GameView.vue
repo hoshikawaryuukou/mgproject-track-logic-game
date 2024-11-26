@@ -1,33 +1,72 @@
 <script setup lang="ts">
 import { useGameStore } from '../stores/useGameStore'
 import Board from '@/components/Board.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 
 const gameStore = useGameStore()
 const boardRef = ref()
-const initialStonePositions = ref<number[]>([])
+const interactable = ref(true)
+const currentPlayerSymbol = computed(() => getPlayerSymbol(gameStore.currentPlayer))
+const gameResult = computed(() =>
+  gameStore.winner === null ? null : getWinnerSymbol(gameStore.winner),
+)
 
-const resetStones = (): void => {
+const resetGame = (): void => {
+  gameStore.initializeGame()
   boardRef.value?.resetStones()
+  interactable.value = true
 }
 
-const handleCellClicked = (position: number): void => {
+const handleCellClicked = async (position: number): Promise<void> => {
+  if (interactable.value === false) {
+    return
+  }
+
+  if (boardRef.value?.isCellEmpty(position) === false) {
+    console.log('該位置已被佔用，請選擇其他位置。')
+    return
+  }
+
   gameStore.placeStone(position)
-  boardRef.value = gameStore.stones
+  boardRef.value?.addStone(position)
+  interactable.value = false
+  await new Promise((resolve) => setTimeout(resolve, 200))
+  boardRef.value?.moveStones('clockwise')
+  await new Promise((resolve) => setTimeout(resolve, 200))
+
+  if (gameStore.winner !== null) {
+    interactable.value = false
+  } else {
+    interactable.value = true
+  }
+}
+
+const getPlayerSymbol = (player: string): string => (player === 'X' ? '⚫' : '⚪')
+
+const getWinnerSymbol = (winner: string): string => {
+  switch (winner) {
+    case 'X':
+      return '⚫'
+    case 'O':
+      return '⚪'
+    default:
+      return '😐'
+  }
 }
 
 onMounted(() => {
-  resetStones()
+  resetGame()
 })
 </script>
 
 <template>
   <div class="about">
-    <Board
-      ref="boardRef"
-      :initialStonePositions="initialStonePositions"
-      @cellClicked="handleCellClicked"
-    />
+    <div>當前玩家: {{ currentPlayerSymbol }}</div>
+    <div>遊戲結果: {{ gameResult }}</div>
+    <Board ref="boardRef" @cellClicked="handleCellClicked" />
+    <div class="buttons">
+      <button class="reset-button" @click="resetGame">重置遊戲</button>
+    </div>
   </div>
 </template>
 

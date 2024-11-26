@@ -32,10 +32,9 @@ export class Board {
 
   moveStones(direction: Direction) {
     const moveMap = direction === Direction.Clockwise ? this.clockwiseMap : this.counterClockwiseMap
-
     const newBoard: Cell[] = []
     for (let i = 0; i < this.stones.length; i++) {
-      newBoard[i] = this.stones[moveMap[i]]
+      newBoard[moveMap[i]] = this.stones[i]
     }
 
     this.stones = newBoard
