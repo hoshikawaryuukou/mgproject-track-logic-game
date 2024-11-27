@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import Greetings from './components/Greetings.vue'
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <img alt="Logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
+      <Greetings msg="Let's play!" />
       <nav>
         <RouterLink to="/">Description</RouterLink>
-        <RouterLink to="/board-demo">Board-Demo</RouterLink>
         <RouterLink to="/game">Game</RouterLink>
+        <RouterLink to="/board-demo">Board-Demo</RouterLink>
       </nav>
     </div>
   </header>
@@ -34,9 +33,10 @@ header {
 
 nav {
   width: 100%;
-  font-size: 12px;
+  font-size: 16px;
   text-align: center;
   margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 nav a.router-link-exact-active {
@@ -78,9 +78,9 @@ nav a:first-of-type {
     text-align: left;
     margin-left: -1rem;
     font-size: 1rem;
-
     padding: 1rem 0;
     margin-top: 1rem;
+    margin-bottom: 0;
   }
 }
 </style>

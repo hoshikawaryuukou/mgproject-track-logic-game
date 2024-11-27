@@ -6,15 +6,15 @@ import { ref, onMounted, computed } from 'vue'
 const gameStore = useGameStore()
 const boardRef = ref()
 const interactable = ref(true)
-const currentPlayerSymbol = computed(() => getPlayerSymbol(gameStore.currentPlayer))
-const gameResult = computed(() =>
-  gameStore.winner === null ? null : getWinnerSymbol(gameStore.winner),
-)
+const currentPlayerSymbol = ref<string | null>(null)
+const gameResult = ref<string | null>(null)
 
 const resetGame = (): void => {
   gameStore.initializeGame()
   boardRef.value?.resetStones()
   interactable.value = true
+  currentPlayerSymbol.value = getPlayerSymbol(gameStore.currentPlayer)
+  gameResult.value = null
 }
 
 const handleCellClicked = async (position: number): Promise<void> => {
@@ -31,10 +31,13 @@ const handleCellClicked = async (position: number): Promise<void> => {
   boardRef.value?.addStone(position)
   interactable.value = false
   await new Promise((resolve) => setTimeout(resolve, 200))
+
   boardRef.value?.moveStones('clockwise')
   await new Promise((resolve) => setTimeout(resolve, 200))
 
+  currentPlayerSymbol.value = getPlayerSymbol(gameStore.currentPlayer)
   if (gameStore.winner !== null) {
+    gameResult.value = getWinnerSymbol(gameStore.winner)
     interactable.value = false
   } else {
     interactable.value = true
@@ -61,8 +64,12 @@ onMounted(() => {
 
 <template>
   <div class="about">
-    <div>當前玩家: {{ currentPlayerSymbol }}</div>
-    <div>遊戲結果: {{ gameResult }}</div>
+    <div class="status">
+      <div v-if="gameResult === null" class="current-player">
+        當前玩家: {{ currentPlayerSymbol }}
+      </div>
+      <div v-else class="game-result">遊戲結果: {{ gameResult }}</div>
+    </div>
     <Board ref="boardRef" @cellClicked="handleCellClicked" />
     <div class="buttons">
       <button class="reset-button" @click="resetGame">重置遊戲</button>
@@ -77,6 +84,21 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+.status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.current-player,
+.game-result {
+  font-size: 20px;
+  margin: 5px 0;
+}
+.game-result {
+  font-weight: bold;
+  color: #ff5722;
 }
 .buttons {
   display: flex;
