@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useGameStore } from '../stores/useGameStore'
 import Board from '@/components/Board.vue'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const gameStore = useGameStore()
 const boardRef = ref()
