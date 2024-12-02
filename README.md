@@ -1,39 +1,45 @@
 # mgproject-track-logic-game
 
-## 遊戲簡介
-兩名玩家需要在 4x4 棋盤上輪流放置棋子，並在每次放置後移動棋盤上的棋子。目標是讓自己的棋子率先形成橫向、縱向或對角線的連線！
+This template should help get you started developing with Vue 3 in Vite.
 
-## 遊戲規則
-1. **玩家與棋盤**
-   - 遊戲由兩名玩家參與，分別為 玩家 X 和 玩家 O。
-   - 棋盤為一個 4x4 的方格矩陣，每個方格初始時為空。
-2. **放置棋子**
-   - 每位玩家在自己的回合可以選擇一個空格放置自己的棋子。
-3. **移動棋子**
-   - 每次放置棋子後，棋盤上的所有棋子**順時針移動一格**。
-4. **勝利條件**
-   - 玩家棋子若能形成四顆連成一線（橫向、縱向或對角線），則該玩家獲勝。
-   - 若棋盤填滿且無法形成連線，則遊戲平局。
-   - 若無勝負且棋盤未填滿，則換另一位玩家進行下一回合。
+## Recommended IDE Setup
 
----
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-## Domain Model
+## Type Support for `.vue` Imports in TS
 
-棋盤: 一維陣列
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
 
+## Customize configuration
 
+See [Vite Configuration Reference](https://vite.dev/config/).
 
+## Project Setup
 
+```sh
+pnpm install
+```
 
-## Presentation
+### Compile and Hot-Reload for Development
 
-遊戲的三個狀態：
+```sh
+pnpm dev
+```
 
-1. 初始化 (idle)
-   - 棋盤為空，等待玩家開始。
-2. 玩家回合 (player_turn)
-   - 顯示當前玩家，等待操作。
-3. 放置棋子 (placing)
-   - 更新棋盤狀態，顯示移動過程及勝負結果。
- 
+### Type-Check, Compile and Minify for Production
+
+```sh
+pnpm build
+```
+
+### Run Unit Tests with [Vitest](https://vitest.dev/)
+
+```sh
+pnpm test:unit
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+pnpm lint
+```
